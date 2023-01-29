@@ -6,7 +6,7 @@ export const Header = () => {
   const router = useRouter();
   const isActive: (path: string) => boolean = (path) =>
     router.pathname === path;
-  const { data: session, status } = useSession();
+  const { data: session, status, ...rest } = useSession();
 
   let left = (
     <div className="left">
@@ -170,16 +170,20 @@ export const Header = () => {
   }
 
   return (
-    <nav>
-      {left}
-      {right}
-      <style jsx>{`
-        nav {
-          display: flex;
-          align-items: center;
-          padding: 2rem;
-        }
-      `}</style>
-    </nav>
+    <>
+      <nav>
+        {left}
+        {right}
+        <style jsx>{`
+          nav {
+            display: flex;
+            align-items: center;
+            padding: 2rem;
+          }
+        `}</style>
+      </nav>
+      <div>{JSON.stringify(status)}</div>
+      <button onClick={() => console.log(status, session)}>TEST</button>
+    </>
   );
 };

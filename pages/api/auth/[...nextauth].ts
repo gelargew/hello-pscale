@@ -6,6 +6,8 @@ import GoogleProvider from "next-auth/providers/google";
 import prisma from "../../../lib/prisma";
 import CredentialsProvider from "next-auth/providers/credentials";
 
+const bcrypt = require("bcrypt");
+
 const authHandler: NextApiHandler = (req, res) =>
   NextAuth(req, res, {
     providers: [
@@ -17,23 +19,40 @@ const authHandler: NextApiHandler = (req, res) =>
         clientId: process.env.GITHUB_ID as string,
         clientSecret: process.env.GITHUB_SECRET as string,
       }),
-      // CredentialsProvider({
-      //   name: "credentials",
-      // credentials: {
-      //   email: {
-      //     label: "Email",
-      //     type: "email",
-      //     placeholder: "jsmith@gmail.com",
-      //   },
-      //   password: { label: "Password", type: "password" },
-      // },
-      // authorize: async (credentials, request) => {
-      //   // login logic goes here
-      // },
-      // }),
+      CredentialsProvider({
+        name: "Credentials",
+        async authorize(credentials) {
+          if (!credentials) {
+            throw new Error("Invalid credentials");
+          }
+          const user = await prisma.user.findFirst({
+            where: { email: credentials.email },
+          });
+          if (!user) {
+            throw new Error("No user found");
+          }
+          const isValid = await bcrypt.compare(
+            credentials.password,
+            user.password
+          );
+          console.log(isValid, "isValid");
+          if (!isValid) {
+            throw new Error("Invalid password");
+          }
+          console.log(user);
+          return user;
+        },
+        credentials: {
+          email: { label: "Email", type: "text", placeholder: "jsmith" },
+          password: { label: "Password", type: "password" },
+        },
+      }),
     ],
     adapter: PrismaAdapter(prisma),
     secret: process.env.SECRET,
+    session: {
+      strategy: "jwt",
+    },
   });
 
 export default authHandler;
