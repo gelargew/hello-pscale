@@ -49,7 +49,16 @@ const authHandler: NextApiHandler = (req, res) =>
       }),
     ],
     adapter: PrismaAdapter(prisma),
-    secret: process.env.SECRET,
+    secret: process.env.NEXTAUTH_SECRET,
+    callbacks: {
+      jwt: async ({ user, token, ...rest }) => {
+        console.log(user, token, "jwt", rest);
+        if (user) {
+          token.uid = user.id;
+        }
+        return token;
+      },
+    },
     session: {
       strategy: "jwt",
     },

@@ -29,7 +29,6 @@
     "next-auth": "^4.18.8",
     "next-superjson-plugin": "^0.5.4",
     "prisma": "^4.8.1",
-    "puppeteer": "^19.6.2",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "superjson": "^1.12.1",
