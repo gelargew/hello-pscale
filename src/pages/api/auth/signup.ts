@@ -1,5 +1,5 @@
 import { NextApiHandler } from "next";
-import prisma from "../../../lib/prisma";
+import prisma from "../../../../lib/prisma";
 const bcrypt = require("bcrypt");
 
 const handler: NextApiHandler = async (req, res) => {
@@ -11,12 +11,10 @@ const handler: NextApiHandler = async (req, res) => {
       !password ||
       password.trim().length < 7
     ) {
-      res
-        .status(422)
-        .json({
-          message:
-            "Invalid input - password should be at least 7 characters long.",
-        });
+      res.status(422).json({
+        message:
+          "Invalid input - password should be at least 7 characters long.",
+      });
       return;
     }
     const existingUser = await prisma.user.findFirst({

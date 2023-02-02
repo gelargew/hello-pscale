@@ -2,15 +2,18 @@ import Head from "next/head";
 import Image from "next/image";
 import { Inter } from "@next/font/google";
 import styles from "../styles/Home.module.css";
-import prisma from "../lib/prisma";
+import prisma from "../../lib/prisma";
 import { GetStaticProps, InferGetStaticPropsType } from "next";
-import { Header } from "../components/header";
+import { Header } from "../../components/header";
+import { useMutation } from "@tanstack/react-query";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export default function Home({
   allUsers,
 }: InferGetStaticPropsType<typeof getStaticProps>) {
+  const { mutate } = useMutation(["test"], async () => fetch("/api/hello"));
+
   return (
     <>
       <Head>
@@ -24,6 +27,13 @@ export default function Home({
       </header>
       <main className={styles.main}>
         <h1>ALL USER</h1>
+        <button
+          onClick={() => {
+            mutate();
+          }}
+        >
+          TEST FETCH
+        </button>
         <ul>
           {allUsers.map((user) => (
             <li key={user.id}>
